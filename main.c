@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdbool.h>
-
-
 #include <unistd.h>
 
 
 //documentation for sdl: https://wiki.libsdl.org/
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+
+#include "squares.h"
 
 SDL_Window* window;//the window
 SDL_Renderer* renderer;//the render target
@@ -18,11 +18,15 @@ const Uint16 height = 720;
 const Uint16 squareWidth = width / 8;
 const Uint16 squareHeight = squareWidth;
 
+SDL_Texture* textures[12];
+
+
+
 int main(int argc, char* args[]){
 
     //init sdl
 
-
+    {
 
     if (SDL_Init(SDL_INIT_EVERYTHING) > 0){
         printf("SDL_Init FAILED. SDL_ERROR: ");
@@ -40,11 +44,9 @@ int main(int argc, char* args[]){
 
     //create a window
 
-
-
     window = SDL_CreateWindow("Snake!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);//create the window
 
-    //if faield
+    
     if (window == NULL){
         printf("WINDOW FAILED TO INIT. ERROR: ");
         printf("%s", SDL_GetError());
@@ -55,17 +57,38 @@ int main(int argc, char* args[]){
     //create the render target
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Texture* grass = IMG_LoadTexture(renderer, "piece/bB.png");
+    }
 
+    //load textures
+    {
+    
+    textures[BLACK_BISHOP] = IMG_LoadTexture(renderer, "piece/bB.png");
+    textures[BLACK_KING] = IMG_LoadTexture(renderer, "piece/bK.png");
+    textures[BLACK_KNIGHT] = IMG_LoadTexture(renderer, "piece/bN.png");
+    textures[BLACK_PAWN] = IMG_LoadTexture(renderer, "piece/bP.png");
+    textures[BLACK_QUEEN] = IMG_LoadTexture(renderer, "piece/bQ.png");
+    textures[BLACK_ROCK] = IMG_LoadTexture(renderer, "piece/bR.png");
+    textures[WHITE_BISHOP] = IMG_LoadTexture(renderer, "piece/wB.png");
+    textures[WHITE_KING] = IMG_LoadTexture(renderer, "piece/wK.png");
+    textures[WHITE_KNIGHT] = IMG_LoadTexture(renderer, "piece/wN.png");
+    textures[WHITE_PAWN] = IMG_LoadTexture(renderer, "piece/wP.png");
+    textures[WHITE_QUEEN] = IMG_LoadTexture(renderer, "piece/wQ.png");
+    textures[WHITE_ROCK] = IMG_LoadTexture(renderer, "piece/wR.png");
+    
+    
+    }
+    
+    char board[64] = {BLACK_ROCK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROCK,
+                      BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,
+                      EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
+                      EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
+                      EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
+                      EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
+                      WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,
+                      WHITE_ROCK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROCK
+                      };
 
-
-
-    //make a event
     SDL_Event event;
-
-
-
-    //game loop
 
     Uint16 mousePosX;
     Uint16 mousePosY;
@@ -108,15 +131,22 @@ int main(int argc, char* args[]){
 
                 area.x = squareWidth * n;
                 area.y = squareHeight * i;
-                area.w = squareWidth * (n + 1);
-                area.h = squareHeight * (i + 1);
+                area.w = 90;
+                area.h = 90;
 
-                if ((n + (i % 2)) % 2 == 0)
+                if ((n + (i % 2)) % 2 == 1)
                     SDL_SetRenderDrawColor(renderer, 181, 136, 99, 255);
                 else
                     SDL_SetRenderDrawColor(renderer, 240, 217, 181, 255);
 
                 SDL_RenderFillRect(renderer, &area);
+
+                char boardIndex = i * 8 + n;
+
+				if (board[boardIndex] == EMPTY) continue;
+
+                SDL_RenderCopy(renderer, textures[board[boardIndex]], NULL, &area);
+
             }
         }
 
