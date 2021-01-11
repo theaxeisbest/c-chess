@@ -112,6 +112,8 @@ int main(int argc, char* args[]){
                     mousePosX = event.button.x;
                     mousePosY = event.button.y;
                     break;
+				case SDL_MOUSEBUTTONDOWN:
+					break;
 
             }
         }
@@ -145,7 +147,7 @@ int main(int argc, char* args[]){
 
 				if (board[boardIndex] == EMPTY) continue;
 
-                SDL_RenderCopy(renderer, textures[board[boardIndex]], NULL, &area);
+    	        SDL_RenderCopy(renderer, textures[board[boardIndex]], NULL, &area);
 
             }
         }
