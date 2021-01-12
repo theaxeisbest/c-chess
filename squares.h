@@ -7,11 +7,11 @@ enum {
     BLACK_PAWN,
     BLACK_QUEEN,
     BLACK_ROCK,
+    EMPTY,
     WHITE_BISHOP,
     WHITE_KING,
     WHITE_KNIGHT,
     WHITE_PAWN,
     WHITE_QUEEN,
-    WHITE_ROCK,
-    EMPTY
+    WHITE_ROCK
 };
