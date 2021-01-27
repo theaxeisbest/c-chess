@@ -4,23 +4,6 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 
-
-void PromatePawn(char pawnIndex, char* board){
-    if (pawnIndex <= 8){
-        board[pawnIndex] = WHITE_QUEEN;
-    } else{
-        board[pawnIndex] = BLACK_QUEEN;
-    }
-}
-
-void CastleKing(char kingIndex){
-
-}
-
-void AnPassant(char pawnIndex){
-
-}
-
 float BoardDistance(char indexPoint1, char indexPoint2){
     char pieceX = indexPoint1 % 8;
     char pieceY = indexPoint1 / 8;
@@ -353,10 +336,6 @@ char* AllLegealMoves(char* board){
         }
     }
     return moveList;
-}
-
-bool CanCapturePiece(char indexKing){
-    
 }
 
 bool IsMoveLegal(char indexPiece, char indexDestination, char* board){
