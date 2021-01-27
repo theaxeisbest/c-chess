@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <math.h>
 
 
 //documentation for sdl: https://wiki.libsdl.org/
@@ -9,6 +8,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "squares.h"
+#include "moves.h"
 
 SDL_Window* window;//the window
 SDL_Renderer* renderer;//the render target
@@ -23,205 +23,14 @@ SDL_Texture* textures[12];
 
 char board[64] = {BLACK_ROCK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROCK,
                     BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,
+                    EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLACK_ROCK,
                     EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
                     EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-                    EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-                    EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-                    WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,
+                    EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE_ROCK,
+                    WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, EMPTY, WHITE_PAWN, WHITE_PAWN, EMPTY,
                     WHITE_ROCK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROCK
                     };
 
-void PromatePawn(char pawnIndex){
-    if (pawnIndex <= 8){
-        board[pawnIndex] = WHITE_QUEEN;
-    } else{
-        board[pawnIndex] = BLACK_QUEEN;
-    }
-}
-
-bool IsMoveLegal(char indexPiece, char indexDestination){
-
-    char pieceX, pieceY, destinationX, destinationY;
-
-    pieceX = indexPiece % 8;
-    pieceY = indexPiece / 8;
-
-    destinationX = indexDestination % 8;
-    destinationY = indexDestination / 8;
-
-    if ((board[indexPiece] <= BLACK_ROCK && board[indexDestination] <= BLACK_ROCK) ||
-        (board[indexPiece] >= WHITE_BISHOP && board[indexDestination] >= WHITE_BISHOP)){
-        return false;
-    }
-
-    switch (board[indexPiece])
-    {
-    case EMPTY:
-        return false;
-    case WHITE_BISHOP:
-    case BLACK_BISHOP:
-
-        if (pieceX - destinationX == pieceY - destinationY){
-            for (char i = pieceX; i != destinationX; i += (destinationX - pieceX) / SDL_abs(destinationX - pieceX)){
-                if (i == pieceX) continue;
-                if (board[(pieceY + (i - pieceX)) * 8 + i] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        } else if (SDL_abs(pieceX - destinationX) == SDL_abs(pieceY - destinationY)){
-            for (char i = pieceX; i != destinationX; i += (destinationX - pieceX) / SDL_abs(destinationX - pieceX)){
-                if (i == pieceX) continue;
-                if (board[(pieceY - (i - pieceX)) * 8 + i] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        return false;
-    case WHITE_KNIGHT:
-    case BLACK_KNIGHT:
-        ;
-        const signed char LegealMoves[] = {-10,6,15,17,10,-6,-15,-17};
-
-        for (char i = 0; i < 8; i++){
-            if (indexPiece - indexDestination == LegealMoves[i]){
-                return true;
-            }
-
-        }
-
-        return false;
-    case WHITE_QUEEN:
-    case BLACK_QUEEN:
-
-        if (destinationY == pieceY){
-            for (char i = pieceX; i != destinationX; i += (destinationX - pieceX) / SDL_abs(destinationX - pieceX)){
-                if (i == pieceX) continue;
-                if (board[pieceY * 8 + i] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        } else if (destinationX == pieceX){
-            for (char i = pieceY; i != destinationY; i += (destinationY - pieceY) / SDL_abs(destinationY - pieceY)){
-                if (i == pieceY) continue;
-                if (board[i * 8 + pieceX] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        } else if (pieceX - destinationX == pieceY - destinationY){
-            for (char i = pieceX; i != destinationX; i += (destinationX - pieceX) / SDL_abs(destinationX - pieceX)){
-                if (i == pieceX) continue;
-                if (board[(pieceY + (i - pieceX)) * 8 + i] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        } else if (SDL_abs(pieceX - destinationX) == SDL_abs(pieceY - destinationY)){
-            for (char i = pieceX; i != destinationX; i += (destinationX - pieceX) / SDL_abs(destinationX - pieceX)){
-                if (i == pieceX) continue;
-                if (board[(pieceY - (i - pieceX)) * 8 + i] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        return false;
-    case WHITE_ROCK:
-    case BLACK_ROCK:
-        if (destinationY == pieceY){
-            for (char i = pieceX; i != destinationX; i += (destinationX - pieceX) / SDL_abs(destinationX - pieceX)){
-                if (i == pieceX) continue;
-                if (board[pieceY * 8 + i] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        } else if (destinationX == pieceX){
-            for (char i = pieceY; i != destinationY; i += (destinationY - pieceY) / SDL_abs(destinationY - pieceY)){
-                if (i == pieceY) continue;
-                if (board[i * 8 + pieceX] != EMPTY){
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-
-        
-    case WHITE_PAWN:
-
-        if (indexPiece - 16 == indexDestination && pieceY == 6 && board[indexPiece - 8] == EMPTY && board[indexPiece - 16] == EMPTY){
-            return true;
-        }
-
-        if (destinationY == 0){
-            if (indexPiece - indexDestination == 8 && board[indexDestination] != EMPTY)
-                return false;
-            board[indexPiece] = EMPTY;
-            PromatePawn(indexDestination);
-            return false;
-        }
-
-        if ((indexPiece - indexDestination == 7 || indexPiece - indexDestination == 9) && board[indexDestination] != EMPTY){
-            return true;
-        }
-
-
-        if (indexPiece - indexDestination != 8){
-            return false;
-        }
-
-        if (board[indexPiece - 8] != EMPTY){
-            return false;
-        }
-
-        
-
-        return true;
-    case BLACK_PAWN:
-        
-        if (indexPiece + 16 == indexDestination && pieceY == 1 && board[indexPiece + 8] == EMPTY && board[indexPiece + 16] == EMPTY){
-            return true;
-        }
-
-        if (destinationY == 7){
-            if (indexPiece - indexDestination == -8 && board[indexDestination] != EMPTY)
-                return false;
-            board[indexPiece] = EMPTY;
-            PromatePawn(indexDestination);
-            return false;
-        }
-
-        if ((indexPiece - indexDestination == -7 || indexPiece - indexDestination == -9) && board[indexDestination] != EMPTY){
-            return true;
-        }
-
-
-        if (indexPiece - indexDestination != -8){
-            return false;
-        }
-
-        if (board[indexPiece + 8] != EMPTY){
-            return false;
-        }
-
-        return true;
-    case WHITE_KING:
-    case BLACK_KING:
-
-        if (SDL_abs(pieceX - destinationX) <= 1 && SDL_abs(pieceY - destinationY) <= 1)
-            return true;
-        return false;
-    
-    default:
-        return true;
-    }
-}
 
 int main(int argc, char* args[]){
 
@@ -312,7 +121,7 @@ int main(int argc, char* args[]){
 					if (selected != -1){
 						char buffer = board[selected];
 
-                        if (IsMoveLegal(selected, (mousePosX / squareWidth) + (mousePosY / squareHeight) * 8)){
+                        if (IsMoveLegal(selected, (mousePosX / squareWidth) + (mousePosY / squareHeight) * 8, board)){
                             board[selected] = EMPTY;
 						    board[(mousePosX / squareWidth) + (mousePosY / squareHeight) * 8] = buffer;
                         }
