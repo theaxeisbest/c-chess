@@ -119,11 +119,11 @@ int main(int argc, char* args[]){
 				case SDL_MOUSEBUTTONDOWN:
 					
 					if (selected != -1){
-						char buffer = board[selected];
 
-                        if (IsMoveLegal(selected, (mousePosX / squareWidth) + (mousePosY / squareHeight) * 8, board)){
-                            board[selected] = EMPTY;
-						    board[(mousePosX / squareWidth) + (mousePosY / squareHeight) * 8] = buffer;
+                        const char destination = (mousePosX / squareWidth) + (mousePosY / squareHeight) * 8;
+
+                        if (IsMoveLegal(selected, destination, board)){
+                            BoardAfterMove(board, selected, destination);
                         }
 
 						selected = -1;

@@ -37,13 +37,10 @@ char* AllLegealMoves(char* board){
 
     for (char indexPiece = 0; indexPiece < 64; indexPiece++){
 
-        
-        signed char pieceX, pieceY, destinationX, destinationY;
+        const signed char pieceX = indexPiece % 8;
+        const signed char pieceY = indexPiece / 8;
 
-        pieceX = indexPiece % 8;
-        pieceY = indexPiece / 8;
-
-        bool isBlack = board[indexPiece] < EMPTY;
+        const bool isBlack = board[indexPiece] < EMPTY;
 
         const signed char LegealMovesKnight[] = {-10,6,15,17,10,-6,-15,-17};
         const signed char LegealMovesBishop[] = {7, 9, -7, -9};
@@ -336,6 +333,24 @@ char* AllLegealMoves(char* board){
         }
     }
     return moveList;
+}
+
+void BoardAfterMove(char* board, char indexPiece, char indexDestination){
+
+    if (board[indexPiece] == WHITE_PAWN || board[indexPiece] == BLACK_PAWN){
+        const signed char pieceY = indexDestination / 8;
+        if (pieceY == 0 || pieceY == 7){
+            const bool isBlack = board[indexPiece] < EMPTY;
+            board[indexDestination] = isBlack ? BLACK_QUEEN : WHITE_QUEEN;
+            goto end;
+        }
+    }
+    
+    board[indexDestination] = board[indexPiece];
+
+    end:;
+
+    board[indexPiece] = EMPTY;
 }
 
 bool IsMoveLegal(char indexPiece, char indexDestination, char* board){
