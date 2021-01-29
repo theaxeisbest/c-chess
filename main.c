@@ -91,6 +91,7 @@ int main(int argc, char* args[]){
     
 	
 	char selected = -1;
+    bool blacksTurn = false;
 
     SDL_Event event;
 
@@ -124,12 +125,19 @@ int main(int argc, char* args[]){
 
                         if (IsMoveLegal(selected, destination, board)){
                             BoardAfterMove(board, selected, destination);
+                            blacksTurn = !blacksTurn;
                         }
 
 						selected = -1;
 						break;
 					}
+
 					selected = (mousePosX / squareWidth) + (mousePosY / squareHeight) * 8;
+
+                    if (!blacksTurn ? board[selected] < EMPTY : board[selected] > EMPTY){
+                        selected = -1;
+                    }
+
 
 					break;
 
