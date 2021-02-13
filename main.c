@@ -156,6 +156,8 @@ int main(int argc, char* args[]){
 
             BoardAfterMove(board, move[0], move[1]);
 
+            free(move);
+
             blacksTurn = false;
 
         }
