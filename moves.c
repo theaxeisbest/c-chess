@@ -290,10 +290,20 @@ char* AllLegealMoves(char* board){
 			}
 
 			if (board[indexPiece - 7] < EMPTY){
+				if (abs((indexPiece % 8) - pieceX) != 1)
+				{
+					break;
+				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece - 7);
+					
+				
 			}
 
 			if (board[indexPiece - 9] < EMPTY){
+				if (abs((indexPiece % 8) - pieceX) != 1)
+				{
+					break;
+				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece - 9);
 			}
 

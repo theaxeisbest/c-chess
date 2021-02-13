@@ -37,11 +37,12 @@ void* DisplayWinMessage(void* whoWon){
     const bool wonWhite = *(char*)whoWon;
 
     #ifndef _WIN32
-    //TODO: inplement this for other linux systems with GTK+  
+    //TODO: inplement this for other linux systems with GTK+
+    int returnVal;
     if (wonWhite)
-        system("zenity --info --text \"You won!\"");
+        returnVal = system("zenity --info --text \"You won!\"");
     else
-        system("zenity --info --text \"yThe computer won!\"");
+        returnVal = system("zenity --info --text \"The computer won!\"");
 
     #else
     //TODO: inplement windows dialoge box
@@ -73,7 +74,6 @@ int main(int argc, char* args[]){
     //create a window
 
     window = SDL_CreateWindow("Chess!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);//create the window
-
     
     if (window == NULL){
         printf("WINDOW FAILED TO INIT. ERROR: ");
@@ -117,6 +117,7 @@ int main(int argc, char* args[]){
     while (1){
 
         usleep(10000);
+
         
         {
         bool blacksKing = false;
