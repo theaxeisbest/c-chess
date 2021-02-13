@@ -6,9 +6,11 @@
 //documentation for sdl: https://wiki.libsdl.org/
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <pthread.h>
 
 #include "squares.h"
 #include "moves.h"
+#include "engine.h"
 
 SDL_Window* window;//the window
 SDL_Renderer* renderer;//the render target
@@ -31,6 +33,22 @@ char board[64] = {BLACK_ROCK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KIN
                     WHITE_ROCK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROCK
                     };
 
+void* DisplayWinMessage(void* whoWon){
+    const bool wonWhite = *(char*)whoWon;
+
+    #ifndef _WIN32
+    //TODO: inplement this for other linux systems with GTK+  
+    if (wonWhite)
+        system("zenity --info --text \"You won!\"");
+    else
+        system("zenity --info --text \"yThe computer won!\"");
+
+    #else
+    //TODO: inplement windows dialoge box
+    #endif
+
+    return NULL;
+}
 
 int main(int argc, char* args[]){
 
@@ -88,8 +106,6 @@ int main(int argc, char* args[]){
     
     }
     
-    
-	
 	char selected = -1;
     bool blacksTurn = false;
 
@@ -101,7 +117,50 @@ int main(int argc, char* args[]){
     while (1){
 
         usleep(10000);
+        
+        {
+        bool blacksKing = false;
+        bool whitesKing = false;
+        for (char n = 0; n < 64; n++){
+            if (board[n] == WHITE_KING){
+                whitesKing = true;
+            } else if (board[n] == BLACK_KING){
+                blacksKing = true;
+            }
+        }
 
+        if (!(blacksKing && whitesKing)){
+            pthread_t thread_id;
+            pthread_create(&thread_id, NULL, DisplayWinMessage, &whitesKing);
+            return 0;
+        }
+
+        }
+
+        {
+        bool blacksKing = false;
+        bool whitesKing = false;
+        for (char n = 0; n < 64; n++){
+            if (board[n] == WHITE_KING){
+                whitesKing = true;
+            } else if (board[n] == BLACK_KING){
+                blacksKing = true;
+            }
+        }
+
+        }
+
+        //computers turn
+        if (blacksTurn){
+            char* move = MakeBestMove(board);
+
+            BoardAfterMove(board, move[0], move[1]);
+
+            blacksTurn = false;
+
+        }
+
+        //if won
 
 
         //do all the events that occur
@@ -134,7 +193,7 @@ int main(int argc, char* args[]){
 
 					selected = (mousePosX / squareWidth) + (mousePosY / squareHeight) * 8;
 
-                    if (!blacksTurn ? board[selected] < EMPTY : board[selected] > EMPTY){
+                    if (board[selected] < EMPTY){
                         selected = -1;
                     }
 
