@@ -153,7 +153,7 @@ int main(int argc, char* args[]){
 
         //computers turn
         if (blacksTurn){
-            char* move = MakeBestMove(board);
+            char* move = MakeBestMove(board, 4);
 
             BoardAfterMove(board, move[0], move[1]);
 

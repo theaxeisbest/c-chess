@@ -63,7 +63,7 @@ int* GenerateTree(unsigned int depth, char* startBoard){
 
 }
 
-char* MakeBestMove(char* board){
+char* MakeBestMoveRandom(char* board){
     char* moves = AllLegealMoves(board);
     char* ret = malloc(2);
 
@@ -81,4 +81,90 @@ char* MakeBestMove(char* board){
     free(moves);
 
     return ret; 
+}
+
+unsigned int RetMin(unsigned int* list, unsigned short int size){
+    unsigned short int ret = 0;
+    for (unsigned short int n = 1; n < size; n++){
+        if (list[ret] > list[n]){
+            ret = n;
+        }
+    }
+}
+
+unsigned int RetMax(unsigned int* list, unsigned short int size){
+    unsigned short int ret = 0;
+    for (unsigned short int n = 1; n < size; n++){
+        if (list[ret] < list[n]){
+            ret = n;
+        }
+    }
+}
+
+unsigned int MiniMaxBoard(char* board, short unsigned int deapth, bool blacksTurn){
+
+    if (deapth == 0){
+        return EvaluateBoard(board);
+    }
+
+    char* allMoves = AllLegealMoves(board);
+
+    const unsigned short int allMovesLen = NumberOfMoves(allMoves);
+
+    unsigned int* moveValues = malloc(allMovesLen); 
+
+    for (unsigned short int n = 0; n < allMovesLen; n += 1){
+
+        char* copyOfBoard = CopyBoard(board);
+
+        BoardAfterMove(copyOfBoard, n, n+1);
+
+        moveValues[n >> 1] /* <-- same as / 2 (just a smudge bit faster)*/ = MiniMaxBoard(board, deapth - 1, !blacksTurn);
+
+        free(copyOfBoard);
+    }
+
+    unsigned int indexRet;
+
+    if (blacksTurn){
+        indexRet = RetMin(moveValues, allMovesLen);
+    } else {
+        indexRet = RetMax(moveValues, allMovesLen);
+    }
+
+    unsigned int ret = moveValues[indexRet];
+
+    free(moveValues);
+
+    return ret;
+}
+
+char* MakeBestMove(char* board, short unsigned int deapth){
+    char* allMoves = AllLegealMoves(board);
+
+    const unsigned short int allMovesLen = NumberOfMoves(allMoves);
+
+    unsigned int* moveValues = malloc(allMovesLen);  
+
+    for (unsigned short int n = 0; n < allMovesLen; n += 1){
+
+        char* copyOfBoard = CopyBoard(board);
+
+        BoardAfterMove(copyOfBoard, n, n+1);
+
+        moveValues[n / 2] /* <-- same as / 2 (just a smudge bit faster)*/ = MiniMaxBoard(board, deapth - 1, true);
+
+        free(copyOfBoard);
+    }
+
+    unsigned int indexRet = RetMin(moveValues, allMovesLen);
+
+    free(moveValues);
+
+    char* ret = malloc(2);
+
+    ret[0] = allMoves[indexRet * 2];
+    ret[1] = allMoves[(indexRet * 2) + 1];
+
+    return ret;
 }

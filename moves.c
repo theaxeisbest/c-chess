@@ -411,3 +411,13 @@ unsigned short int NumberOfMoves(char* moveList){
 
 	}
 }
+
+char* CopyBoard(char* board){
+	char* newBoard = malloc(64);
+
+	for (char i = 0; i < 64; i++){
+		newBoard[i] = board[i];
+	}
+
+	return newBoard;
+}
