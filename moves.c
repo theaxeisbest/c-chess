@@ -286,63 +286,45 @@ char* AllLegealMoves(char* board){
 			}
 
 			if (pieceY == 6 && board[indexPiece - 16] == EMPTY){
-				if (board[indexPiece - 8] != EMPTY){
-					break;
-				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece - 16);
 			}
 
+			if ((indexPiece / 8) < pieceY - 1){
+				break;
+			}
+
 			if (board[indexPiece - 7] < EMPTY){
-				if (abs((indexPiece % 8) - pieceX) != 1)
-				{
-					break;
-				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece - 7);
-					
-				
 			}
 
 			if (board[indexPiece - 9] < EMPTY){
-				if (abs((indexPiece % 8) - pieceX) != 1)
-				{
-					break;
-				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece - 9);
 			}
 
 			break;
 		case BLACK_PAWN:
+			if (pieceY == 1 && board[indexPiece + 16] == EMPTY){
+				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece + 16);
+			}
 			
 			if (board[indexPiece + 8] == EMPTY){
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece + 8);
 			}
 
-			if (pieceY == 1 && board[indexPiece + 16] == EMPTY){
-				if (board[indexPiece - 8] != EMPTY){
-					break;
-				}
-				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece + 16);
+			if ((indexPiece / 8) > pieceY + 1){
+				break;
 			}
 
 			if (board[indexPiece + 7] > EMPTY){
-				if (abs((indexPiece % 8) - pieceX) != 1)
-				{
-					break;
-				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece + 7);
 			}
 
 			if (board[indexPiece + 9] > EMPTY){
-				if (abs((indexPiece % 8) - pieceX) != 1)
-				{
-					break;
-				}
 				AddMoveToList(moveList, &listPointer, indexPiece, indexPiece + 9);
 			}
 
 
 			break;
-
 			
 		case WHITE_KING:
 		case BLACK_KING:
@@ -406,7 +388,7 @@ unsigned short int NumberOfMoves(char* moveList){
 		const Uint16* moveListUint16 = (Uint16*)moveList;
 
 		if (moveListUint16[n] == 0){
-			return n;
+			return n - 1;
 		}
 
 	}
@@ -420,4 +402,34 @@ char* CopyBoard(char* board){
 	}
 
 	return newBoard;
+}
+
+char* filterColor(char* moves, char* board, bool filterBlack){
+
+	char* newMoves = malloc(1024 * 2);
+	unsigned int newMovesPointer = 0;
+
+	if (filterBlack){
+		for (unsigned int x = 0; x < 1024; x++){
+			if (board[moves[x * 2]] < EMPTY){
+				newMoves[newMovesPointer] = moves[x*2];
+				newMoves[newMovesPointer + 1] = moves[x*2+1];
+				newMovesPointer += 2;
+			}
+		}
+			
+	}else {
+		for (unsigned int x = 0; x < 1024; x++){
+			if (board[moves[x * 2]] > EMPTY){
+				newMoves[newMovesPointer] = moves[x*2];
+				newMoves[newMovesPointer + 1] = moves[x*2+1];
+				newMovesPointer += 2;
+			}
+		}
+	}
+
+	free(moves);
+
+	return newMoves;
+
 }

@@ -117,9 +117,9 @@ unsigned int MiniMaxBoard(char* board, short unsigned int deapth, bool blacksTur
 
         char* copyOfBoard = CopyBoard(board);
 
-        BoardAfterMove(copyOfBoard, n, n+1);
+        BoardAfterMove(copyOfBoard, n*2, (n*2)+1);
 
-        moveValues[n >> 1] /* <-- same as / 2 (just a smudge bit faster)*/ = MiniMaxBoard(board, deapth - 1, !blacksTurn);
+        moveValues[n] /* <-- same as / 2 (just a smudge bit faster)*/ = MiniMaxBoard(board, deapth - 1, !blacksTurn);
 
         free(copyOfBoard);
     }
@@ -142,24 +142,26 @@ unsigned int MiniMaxBoard(char* board, short unsigned int deapth, bool blacksTur
 char* MakeBestMove(char* board, short unsigned int deapth){
     char* allMoves = AllLegealMoves(board);
 
+    allMoves = filterColor(allMoves, board, true);
+
     const unsigned short int allMovesLen = NumberOfMoves(allMoves);
 
-    unsigned int* moveValues = malloc(allMovesLen);  
-
+    unsigned int* moveValues = malloc(allMovesLen*4); 
+     
     for (unsigned short int n = 0; n < allMovesLen; n += 1){
 
         char* copyOfBoard = CopyBoard(board);
 
-        BoardAfterMove(copyOfBoard, n, n+1);
+        BoardAfterMove(copyOfBoard, allMoves[n*2], allMoves[(n*2)+1]);
+ 
+        moveValues[n] = EvaluateBoard(copyOfBoard);
 
-        moveValues[n / 2] /* <-- same as / 2 (just a smudge bit faster)*/ = MiniMaxBoard(board, deapth - 1, true);
-
-        free(copyOfBoard);
+        //free(copyOfBoard);
     }
 
     unsigned int indexRet = RetMin(moveValues, allMovesLen);
 
-    free(moveValues);
+    //free(moveValues);
 
     char* ret = malloc(2);
 
@@ -168,3 +170,29 @@ char* MakeBestMove(char* board, short unsigned int deapth){
 
     return ret;
 }
+
+/*
+char* MakeBestMove(char* board, short unsigned int deapth){
+    char* allMoves = AllLegealMoves(board);
+
+    allMoves = filterColor(allMoves, board, true);
+
+    const unsigned short int allMovesLen = NumberOfMoves(allMoves);
+
+    char* retVal = malloc(allMovesLen * 2);
+
+    unsigned int* moveValues = malloc(allMovesLen) 
+
+    for (unsigned short int i = 0; i < allMovesLen; i++){
+        char* copyOfBoard = CopyBoard(board);
+
+        BoardAfterMove(copyOfBoard, allMoves[i * 2], allMoves[(i * 2) + 1]);
+
+         = EvaluateBoard(copyOfBoard);
+
+
+
+        free(copyOfBoard);
+    }
+}
+*/
